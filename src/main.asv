@@ -1,0 +1,2 @@
+wrapper1 = FeaWrapper('dogs');
+wrapper1.printGeoPath()
