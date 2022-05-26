@@ -27,50 +27,38 @@ methods (Static)
         fclose(fid);
     end
 
-    function solvedPde = solvePde(pde, E, nu, weight, md)
-        solvedPde = pde.solve(E, nu, weight, md);
-    end
-
-
-    function runSimulation(pde, E, nu, weight, weightStep, ...
-            md, yieldLimit, maxLimit, figLoc, logLoc)
+    function runSimulation(pde, E, nu, weight, md, yieldLimit, ...
+            maxLimit, resultsNoTrussFigures, logLocation)
         % Wrapper function to run the simulation and save the results
         % pde       -> pde to solve
         % E         -> Youngs modulus
         % nu        -> Poissons ratio
         % weight    -> weight applied to the structure (N)
-        % weightStep-> step size for the parameter sweep (N)
         % md        -> mass density
         % yieldLimit-> yield point of a material (Pa)
-        % maxLimit  -> ultimate strength of a material (Pa)
-        % figLoc    -> path to figure output
-        % logLoc    -> path to log file
-
+        % max
         maxStress = 0;
-        while(maxStress < yieldLimit)
-            % Delete all annotations
-            delete(findall(gcf,'type','annotation'));
+        while(maxStress < maxLimit)
+            delete(findall(gcf,'type','annotation'))
         
-            % Perform FEA and visualize output
-            solvedPde = Utils.solvePde(pde, E, nu, weight, md);
-            maxStress = max(solvedPde.Rs.VonMisesStress)
-            solvedPde.visualizeOutput(weight, maxStress, yieldLimit, maxLimit);
+            withoutTruss = pde.solve(E, nu, weight, md);
+            maxStress = max(withoutTruss.Rs.VonMisesStress)
+            withoutTruss.visualizeOutput(weight, maxStress, yieldLimit, maxLimit);
+            
         
             % Save img
-            imgNameSide = append(figLoc, '/side', ...
+            imgNameSide = append(resultsNoTrussFigures, '/noTruss_Side', ...
                 string(weight), '.png');
-            imgNamePersp = append(figLoc, '/persp', ...
+            imgNamePersp = append(resultsNoTrussFigures, '/noTruss_Persp', ...
                 string(weight), '.png');
-            saveas(gcf, imgNameSide);
-            
+            saveas(gcf, imgNameSide)
             % Rotate for perspective view
             view(30,30);
-            saveas(gcf, imgNamePersp);
+            saveas(gcf, imgNamePersp)
             
             % Write log
-            logEntry = append("weight:", string(weight), ...
-                ", maxStress:", string(maxStress));
-            Utils.writeToLogFile(logLoc, logEntry)
+            logEntry = append("weight:", string(weight), ", stress:", string(maxStress))
+            Utils.writeToLogFile(logLocation, logEntry)
             weight = weight + weightStep
         end
     end
