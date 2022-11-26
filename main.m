@@ -29,13 +29,13 @@ yieldLimit  = 3.5e8     % permanent deformation
 maxLimit    = 5e8       % neck forming
 
 weight      = 0;        % Approx. 98k is 100 tons
-weightStep  = 980       % 100kg
+weightStep  = 50000       % 100kg
 allConds    = [E nu weight md yieldLimit maxLimit];
 condNames   = ["E", "nu", "weight", "md", "yieldLimit", "maxLimit"]
 
 %% Visualize
-% withTruss.visGeo('With Truss');
-% withoutTruss.visGeo('Without Truss');
+%withTruss.visGeo('With Truss');
+%withoutTruss.visGeo('Without Truss');
 
 %% Perform Computing With Truss
 % withTruss = withTruss.solve(E, nu, weight, md);
